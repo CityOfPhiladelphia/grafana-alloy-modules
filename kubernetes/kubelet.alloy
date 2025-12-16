@@ -42,7 +42,7 @@ declare "kubelet" {
       action = "keep"
     }
   
-    forward_to = [prometheus.remote_write.mimirprod.receiver]
+    forward_to = argument.destinations.value
   }
   
   // Kubelet Resources
