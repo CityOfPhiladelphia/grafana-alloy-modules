@@ -1,4 +1,4 @@
-declare "kubelet" {
+declare "node_exporter" {
   argument "targets" {}
   argument "destinations" {}
   argument "scrape_interval" {
