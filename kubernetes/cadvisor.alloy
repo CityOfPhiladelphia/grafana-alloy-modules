@@ -1,4 +1,5 @@
-declare "kubernetes_cadvisor" {
+declare "cadvisor" {
+  argument "targets" {}
   argument "destination" {}
   argument "scrape_interval" {
     default = "60s"
@@ -10,7 +11,7 @@ declare "kubernetes_cadvisor" {
   }
 
   discovery.relabel "cadvisor" {
-    targets = discovery.relabel.nodes.output
+    targets = argument.targets 
     rule {
       replacement   = "/metrics/cadvisor"
       target_label  = "__metrics_path__"
