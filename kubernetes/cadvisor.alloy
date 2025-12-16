@@ -1,6 +1,6 @@
 declare "cadvisor" {
   argument "targets" {}
-  argument "destination" {}
+  argument "destinations" {}
   argument "scrape_interval" {
     default = "60s"
     optional = true
@@ -114,6 +114,6 @@ declare "cadvisor" {
       target_label = "__keepme"
       replacement = ""
     }
-    forward_to = [argument.destination]
+    forward_to = argument.destinations
   }
 }
