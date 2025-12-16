@@ -11,7 +11,7 @@ declare "cadvisor" {
   }
 
   discovery.relabel "cadvisor" {
-    targets = argument.targets 
+    targets = argument.targets.value
     rule {
       replacement   = "/metrics/cadvisor"
       target_label  = "__metrics_path__"
@@ -32,7 +32,7 @@ declare "cadvisor" {
     }
   
     clustering {
-      enabled = argument.clustering_enabled
+      enabled = argument.clustering_enabled.value
     }
   
     forward_to = [prometheus.relabel.cadvisor.receiver]
@@ -114,6 +114,6 @@ declare "cadvisor" {
       target_label = "__keepme"
       replacement = ""
     }
-    forward_to = argument.destinations
+    forward_to = argument.destinations.value
   }
 }
