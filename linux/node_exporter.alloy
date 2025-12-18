@@ -1,0 +1,58 @@
+declare "node_exporter" {
+  argument "destinations" {}
+  argument "scrape_interval" {
+    default = "60s"
+    optional = true
+  }
+
+  prometheus.exporter.unix "integrations_node_exporter" {
+    // Disable unnecessary collectors to reduce overhead
+    disable_collectors = ["ipvs", "btrfs", "infiniband", "xfs", "zfs"]
+    enable_collectors = ["meminfo"]
+  
+    filesystem {
+      // Exclude filesystem types that aren't relevant for monitoring
+      fs_types_exclude     = "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|tmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
+      // Exclude mount points that aren't relevant for monitoring
+      mount_points_exclude = "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+)($|/)"
+      // Timeout for filesystem operations
+      mount_timeout        = "5s"
+    }
+  
+    netclass {
+      // Ignore virtual and container network interfaces
+      ignored_devices = "^(veth.*|cali.*|[a-f0-9]{15})$"
+    }
+  
+    netdev {
+      // Exclude virtual and container network interfaces from device metrics
+      device_exclude = "^(veth.*|cali.*|[a-f0-9]{15})$"
+    }
+  
+  }
+
+  // This block relabels metrics coming from node_exporter to add standard labels
+  discovery.relabel "integrations_node_exporter" {
+    targets = prometheus.exporter.unix.integrations_node_exporter.targets
+  
+    rule {
+      // Set a standard job name for all node_exporter metrics
+      target_label = "job"
+      replacement = "integrations/node_exporter"
+    }
+
+    rule {
+      // Set the instance label to the hostname of the machine
+      target_label = "instance"
+      replacement  = constants.hostname
+    }
+  }
+
+  prometheus.scrape "integrations_node_exporter" {
+    scrape_interval = argument.scrape_interval.value
+    // Use the targets with labels from the discovery.relabel component
+    targets    = discovery.relabel.integrations_node_exporter.output
+    // Send the scraped metrics to the relabeling component
+    forward_to = argument.destinations.value
+  }
+}
