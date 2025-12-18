@@ -1,0 +1,28 @@
+declare "fluxcd" {
+  argument "targets" {}
+  argument "destinations" {}
+  argument "scrape_interval" {
+    default = "60s"
+    optional = true
+  }
+  argument "clustering_enabled" {
+    default = false
+    optional = true
+  }
+
+  prometheus.scrape "karpenter_metrics" {
+    targets = argument.targets.value
+    job_name = "integrations/kubernetes/karpenter"
+    scrape_interval = argument.scrape_interval.value
+    scheme = "http"
+    bearer_token_file = ""
+    tls_config {
+      insecure_skip_verify = true
+    }
+  
+    clustering {
+      enabled = argument.clustering_enabled.value
+    }
+    forward_to = argument.destinations.value
+  }
+}
