@@ -1,0 +1,39 @@
+declare "fluxcd" {
+  argument "targets" {}
+  argument "destinations" {}
+  argument "scrape_interval" {
+    default = "60s"
+    optional = true
+  }
+  argument "clustering_enabled" {
+    default = false
+    optional = true
+  }
+
+  prometheus.scrape "flux_metrics" {
+    targets = argument.targets.value
+    job_name = "integrations/kubernetes/flux"
+    scrape_interval = argument.scrape_interval.value
+    scheme = "http"
+    bearer_token_file = ""
+    tls_config {
+      insecure_skip_verify = true
+    }
+  
+    clustering {
+      enabled = argument.clustering_enabled.value
+    }
+    forward_to = [prometheus.relabel.flux_metrics.receiver]
+  }
+  
+  prometheus.relabel "flux_metrics" {
+    max_cache_size = 100000
+    // A ton of internal go metrics are exported that I can't imagine we use
+    rule {
+      source_labels = ["__name__"]
+      regex = "go_.*"
+      action = "drop"
+    }
+    forward_to = argument.destinations.value
+  }
+}
