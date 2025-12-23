@@ -1,4 +1,4 @@
-declare "pod_logs_daemonset" {
+declare "pod_logs_kube_api" {
   argument "targets" {}
   argument "destinations" {}
   
