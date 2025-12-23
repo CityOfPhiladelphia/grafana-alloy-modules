@@ -1,4 +1,4 @@
-declare "fluxcd" {
+declare "karpenter" {
   argument "targets" {}
   argument "destinations" {}
   argument "scrape_interval" {
