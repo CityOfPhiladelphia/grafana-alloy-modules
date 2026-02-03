@@ -31,8 +31,8 @@ declare "fluxcd" {
     // A ton of internal go metrics are exported that I can't imagine we use
     rule {
       source_labels = ["__name__"]
-      regex = "go_.*"
-      action = "drop"
+      regex = "up|scrape_samples_scraped|flux_.*|controller_.*"
+      action = "keep"
     }
     forward_to = argument.destinations.value
   }
