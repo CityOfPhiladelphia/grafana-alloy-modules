@@ -34,7 +34,7 @@ declare "karpenter" {
     max_cache_size = 100000
     rule {
       source_labels = ["__name__"]
-      regex = "up|scrape_samples_scraped|karpenter_nodes_.*|karpenter_interruption_.*"
+      regex = "up|scrape_samples_scraped|karpenter_nodes_.*|karpenter_interruption_.*|karpenter_cluster_utilization_percent"
       action = "keep"
     }
     forward_to = argument.destinations.value
