@@ -5,6 +5,10 @@ declare "karpenter" {
     default = "60s"
     optional = true
   }
+  argument "instance_type_pricing_scrape_interval" {
+    default = "30m"
+    optional = true
+  }
   argument "clustering_enabled" {
     default = false
     optional = true
@@ -30,7 +34,37 @@ declare "karpenter" {
     max_cache_size = 100000
     rule {
       source_labels = ["__name__"]
-      regex = "up|scrape_samples_scraped|karpenter_nodes_.*|karpenter_cloudprovider_instance_type_offering_price_estimate|karpenter_interruption_.*"
+      regex = "up|scrape_samples_scraped|karpenter_nodes_.*|karpenter_interruption_.*"
+      action = "keep"
+    }
+    forward_to = argument.destinations.value
+  }
+
+  // Karpenter's instance type pricing is very useful because it lets us estimate
+  // and alert on Karpenter pricing in Grafana, but it contains an absurd
+  // amount of data. Since it doesn't change often, we only scrape it every 30 mins
+  // by default
+  prometheus.scrape "karpenter_instance_type_pricing" {
+    targets = argument.targets.value
+    job_name = "integrations/kubernetes/karpenter"
+    scrape_interval = argument.instance_type_pricing_scrape_interval.value
+    scheme = "http"
+    bearer_token_file = ""
+    tls_config {
+      insecure_skip_verify = true
+    }
+  
+    clustering {
+      enabled = argument.clustering_enabled.value
+    }
+    forward_to = [prometheus.relabel.karpenter_instance_type_pricing.receiver]
+  }
+
+  prometheus.relabel "karpenter_instance_type_pricing" {
+    max_cache_size = 100000
+    rule {
+      source_labels = ["__name__"]
+      regex = "karpenter_cloudprovider_instance_type_offering_price_estimate"
       action = "keep"
     }
     forward_to = argument.destinations.value
