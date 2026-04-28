@@ -123,7 +123,7 @@ declare "node_exporter" {
     max_cache_size = 100000
     rule {
       source_labels = ["__name__"]
-      regex = "up|scrape_samples_scraped|node_cpu.*|node_exporter_build_info|node_filesystem.*|node_memory.*|node_network_receive_bytes_total|node_network_receive_drop_total|node_network_transmit_bytes_total|node_network_transmit_drop_total|process_cpu_seconds_total|process_resident_memory_bytes"
+      regex = "up|scrape_.*|node_cpu.*|node_exporter_build_info|node_filesystem_.*_bytes|node_memory.*|node_network_receive_bytes_total|node_network_receive_drop_total|node_network_transmit_bytes_total|node_network_transmit_drop_total|process_cpu_seconds_total|process_resident_memory_bytes"
       action = "keep"
     }
     // Drop metrics for certain file systems
