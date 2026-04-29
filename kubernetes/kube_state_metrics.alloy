@@ -36,7 +36,7 @@ declare "kube_state_metrics" {
     rule {
       source_labels = ["phase"]
       regex = "Failed|Succeeded|Unknown"
-      action = drop
+      action = "drop"
     }
     forward_to = argument.destinations.value
   }
