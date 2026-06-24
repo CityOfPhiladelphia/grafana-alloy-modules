@@ -38,7 +38,7 @@ declare "kubelet" {
     max_cache_size = 100000
     rule {
       source_labels = ["__name__"]
-      regex = "up|scrape_.*|kubelet_volume_stats_available_bytes|kubelet_volume_stats_capacity_bytes|kubelet_volume_stats_used_bytes|process_cpu_seconds_total|process_resident_memory_bytes|storage_operation_errors_total"
+      regex = "up|scrape_.*|kubelet_volume_.*|process_cpu_seconds_total|process_resident_memory_bytes|storage_operation_errors_total"
       action = "keep"
     }
   
